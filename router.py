@@ -25,7 +25,7 @@ mdst = mavutil.mavlink_connection('udpout:192.168.0.105:14450', planner_format=F
 while True:
   # L -> R
     m = msrc.recv();
-    mdst.write(m);
+    mdst.write(m.encode());
   # R -> L
     m2 = mdst.recv();
-    msrc.write(m2);
+    msrc.write(m2.encode());
