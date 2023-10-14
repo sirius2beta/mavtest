@@ -27,9 +27,9 @@ while True:
     m = msrc.recv_match();
     m = msrc.recv_match();
     if m is not None:
-      mdst.write(m);
+      mdst.mav.send(m);
   # R -> L
     m2 = mdst.recv_match();
     m2 = msrc.recv_match();
     if m2 is not None:
-      msrc.write(m2);
+      msrc.mav.send(m2);
