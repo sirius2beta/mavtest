@@ -25,11 +25,9 @@ mdst = mavutil.mavlink_connection('udpout:192.168.0.105:14450', planner_format=F
 while True:
   # L -> R
     m = msrc.recv_match();
-    m = msrc.recv_match();
     if m is not None:
       mdst.mav.send(m);
   # R -> L
     m2 = mdst.recv_match();
-    m2 = msrc.recv_match();
     if m2 is not None:
       msrc.mav.send(m2);
