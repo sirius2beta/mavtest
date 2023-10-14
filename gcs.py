@@ -62,7 +62,7 @@ while True:
         gcs_conn.mav.srcComponent = vcl_msg.get_srcComponent()
 
         gcs_conn.mav.send(vcl_msg)
-        if vcl_msg.getType() == "HEARTBEAT':
+        if vcl_msg.getType() == 'HEARTBEAT':
             print(vcl_msg)
 
     # Don't abuse the CPU by running the loop at maximum speed
