@@ -16,7 +16,7 @@ msrc = mavutil.mavlink_connection('udp:localhost:14550', planner_format=False,
                                   notimestamps=True,
                                   robust_parsing=True)
 
-mdst = mavutil.mavlink_connection('udpout:192.168.0.105:14450', planner_format=False,
+mdst = mavutil.mavlink_connection('udp:localhost:14450', planner_format=False,
                                   notimestamps=True,
                                   robust_parsing=True)
 
