@@ -24,8 +24,8 @@ mdst = mavutil.mavlink_connection('udpout:192.168.0.105:14450', planner_format=F
 # simple basic byte pass through, no logging or viewing of packets, or analysis etc
 while True:
   # L -> R
-    m = msrc.recv();
-    mdst.write(m.encode());
+    m = msrc.recv_match();
+    mdst.write(m);
   # R -> L
-    m2 = mdst.recv();
-    msrc.write(m2.encode());
+    m2 = mdst.recv_match();
+    msrc.write(m2);
