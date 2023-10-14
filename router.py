@@ -22,12 +22,36 @@ mdst = mavutil.mavlink_connection('udpout:192.168.0.105:14450', planner_format=F
 
 
 # simple basic byte pass through, no logging or viewing of packets, or analysis etc
+msrc.logfile_raw = mdst
+mdst.logfile_raw = msrc
+
 while True:
   # L -> R
-    m = msrc.recv_match();
-    if m is not None:
-      mdst.mav.send(m);
+    l = msrc.recv_match();
+    if l is not None:
+       l_last_timestamp = 0
+       if  l.get_type() != 'BAD_DATA':
+           l_timestamp = getattr(l, '_timestamp', None)
+           if not l_timestamp:
+               l_timestamp = l_last_timestamp
+           l_last_timestamp = l_timestamp
+
+       print("--> %s.%02u: %s\n" % (
+           time.strftime("%Y-%m-%d %H:%M:%S",
+                         time.localtime(l._timestamp)),
+           int(l._timestamp*100.0)%100, l))
+
   # R -> L
-    m2 = mdst.recv_match();
-    if m2 is not None:
-      msrc.mav.send(m2);
+    r = mdst.recv_match();
+    if r is not None:
+       r_last_timestamp = 0
+       if r.get_type() != 'BAD_DATA':
+           r_timestamp = getattr(r, '_timestamp', None)
+           if not r_timestamp:
+               r_timestamp = r_last_timestamp
+           r_last_timestamp = r_timestamp
+
+       print("<-- %s.%02u: %s\n" % (
+           time.strftime("%Y-%m-%d %H:%M:%S",
+                         time.localtime(r._timestamp)),
+           int(r._timestamp*100.0)%100, r))
