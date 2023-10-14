@@ -20,8 +20,7 @@ def fixMAVLinkMessageForForward(msg):
 # Modified from the snippet in your question
 # UDP will work just as well or better
 gcs_conn = mavutil.mavlink_connection('udp:localhost:14450', input=False)
-gcs_conn.wait_heartbeat()
-print(f'Heartbeat from system (system {gcs_conn.target_system} component {gcs_conn.target_system})')
+
 
 vehicle = mavutil.mavlink_connection('udp:localhost:14550')
 vehicle.wait_heartbeat()
