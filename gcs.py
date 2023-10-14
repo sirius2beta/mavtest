@@ -33,7 +33,7 @@ while True:
     if gcs_msg is None:
         pass
     elif gcs_msg.get_type() != 'BAD_DATA':
-        if gcs_msg.getType() == 'HEARTBEAT':
+        if gcs_msg.get_type() == 'HEARTBEAT':
             print(gcs_msg)
         # We now have a message we want to forward. Now we need to
         # make it safe to send
@@ -54,7 +54,7 @@ while True:
     elif vcl_msg.get_type() != 'BAD_DATA':
         # We now have a message we want to forward. Now we need to
         # make it safe to send
-        if vcl_msg.getType() == 'HEARTBEAT':
+        if vcl_msg.get_type() == 'HEARTBEAT':
             print(vcl_msg)
         vcl_msg = fixMAVLinkMessageForForward(vcl_msg)
 
