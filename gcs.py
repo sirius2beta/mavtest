@@ -19,7 +19,7 @@ def fixMAVLinkMessageForForward(msg):
 
 # Modified from the snippet in your question
 # UDP will work just as well or better
-gcs_conn = mavutil.mavlink_connection('udp:localhost:14450', input=False)
+gcs_conn = mavutil.mavlink_connection('udp:192.168.0.105:14450', input=False)
 
 
 vehicle = mavutil.mavlink_connection('udp:localhost:14550')
