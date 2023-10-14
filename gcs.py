@@ -45,7 +45,8 @@ while True:
 
         # Only now is it safe to send the message
         vehicle.mav.send(gcs_msg)
-        print(gcs_msg)
+        if gcs_msg.getType() == 'HEARTBEAT':
+            print(gcs_msg)
     vcl_msg = vehicle.recv_match(blocking=False)
     if vcl_msg is None:
         pass
@@ -61,7 +62,8 @@ while True:
         gcs_conn.mav.srcComponent = vcl_msg.get_srcComponent()
 
         gcs_conn.mav.send(vcl_msg)
-        print(vcl_msg)
+        if vcl_msg.getType() == "HEARTBEAT':
+            print(vcl_msg)
 
     # Don't abuse the CPU by running the loop at maximum speed
     time.sleep(0.001)
