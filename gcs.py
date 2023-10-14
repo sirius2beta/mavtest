@@ -22,3 +22,47 @@ def fixMAVLinkMessageForForward(msg):
 gcs_conn = mavutil.mavlink_connection('udp:localhost:14450', input=False)
 gcs_conn.wait_heartbeat()
 print(f'Heartbeat from system (system {gcs_conn.target_system} component {gcs_conn.target_system})')
+
+vehicle = mavutil.mavlink_connection('udp:localhost:14550')
+vehicle.wait_heartbeat()
+print(f'Heartbeat from system (system {vehicle.target_system} component {vehicle.target_system})')
+
+while True:
+    # Don't block for a GCS message - we have messages
+    # from the vehicle to get too
+    gcs_msg = gcs_conn.recv_match(blocking=False)
+    if gcs_msg is None:
+        pass
+    elif gcs_msg.get_type() != 'BAD_DATA':
+        # We now have a message we want to forward. Now we need to
+        # make it safe to send
+        gcs_msg = fixMAVLinkMessageForForward(gcs_msg)
+
+        # Finally, in order to forward this, we actually need to
+        # hack PyMAVLink so the message has the right source
+        # information attached.
+        vehicle.mav.srcSystem = gcs_msg.get_srcSystem()
+        vehicle.mav.srcComponent = gcs_msg.get_srcComponent()
+
+        # Only now is it safe to send the message
+        vehicle.mav.send(gcs_msg)
+        print(gcs_msg)
+    vcl_msg = vehicle.recv_match(blocking=False)
+    if vcl_msg is None:
+        pass
+    elif vcl_msg.get_type() != 'BAD_DATA':
+        # We now have a message we want to forward. Now we need to
+        # make it safe to send
+        vcl_msg = fixMAVLinkMessageForForward(vcl_msg)
+
+        # Finally, in order to forward this, we actually need to
+        # hack PyMAVLink so the message has the right source
+        # information attached.
+        gcs_conn.mav.srcSystem = vcl_msg.get_srcSystem()
+        gcs_conn.mav.srcComponent = vcl_msg.get_srcComponent()
+
+        gcs_conn.mav.send(vcl_msg)
+        print(vcl_msg)
+
+    # Don't abuse the CPU by running the loop at maximum speed
+    time.sleep(0.001)
