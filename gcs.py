@@ -22,7 +22,7 @@ class MavRouter:
 		self.gcs_conn = None
 		self.vehicle = None
 		self.loop = threading.Thread(target=self.loopFunction)
-			self.loop.start()
+		self.loop.start()
 
 	def __del__(self):
 		self.thread_terminate = True
