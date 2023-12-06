@@ -82,7 +82,7 @@ class MavRouter:
 			
 			# Don't abuse the CPU by running the loop at maximum speed
 			time.sleep(0.001)
-mavrouter = MavRouter
+mavrouter = MavRouter()
 mavrouter.connectOutput('udp:192.168.0.99:14450')
 mavrouter.connectInput("/dev/ttyACM0")
 
