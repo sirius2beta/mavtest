@@ -17,10 +17,11 @@ def fixMAVLinkMessageForForward(msg):
 			msg.text = msg.text.encode()
 	return msg
 
-class MavRouter:
+class MavlinkManager:
 	def __init__(self):
 		self.thread_terminate = False
-		self.gcs_conn = None
+		self.gcs_conn_p = None
+		self.gcs_conn_s = None
 		self.vehicle = None
 		self.loop = threading.Thread(target=self.loopFunction)
 		self.loop.start()
@@ -28,10 +29,17 @@ class MavRouter:
 	def __del__(self):
 		self.thread_terminate = True
 		self.loop.join()
-	def connectOutput(self, ip):
-		self.gcs_conn = mavutil.mavlink_connection(ip, input=False)
+	def connectGCS(self, ip, isPrimary):
+		if isPrimary:
+			if self.gcs_conn_p != None:
+				self.gcs_conn_p.close()
+				self.gcs_conn_p = mavutil.mavlink_connection(ip, input=False)
+		else:
+			if self.gcs_conn_s != None:
+				self.gcs_conn_s.close()
+			self.gcs_conn_s = mavutil.mavlink_connection(ip, input=False)
 
-	def connectInput(self, dev):
+	def connectVehicle(self, dev):
 		self.vehicle = mavutil.mavlink_connection(dev, baud=57600)
 	def loopFunction(self):
 		while True:
@@ -39,50 +47,38 @@ class MavRouter:
 				break
             # Don't block for a GCS message - we have messages
             # from the vehicle to get too
-			if (self.gcs_conn == None) or (self.vehicle == None):
-					# Don't abuse the CPU by running the loop at maximum speed
-					time.sleep(0.001)
-					continue
-			gcs_msg = self.gcs_conn.recv_match(blocking=False)
-			if gcs_msg is None:
-					pass
-			elif gcs_msg.get_type() != 'BAD_DATA':
-					if gcs_msg.get_type() == 'HEARTBEAT':
-							print(gcs_msg)
-					# We now have a message we want to forward. Now we need to
-					# make it safe to send
-					gcs_msg = fixMAVLinkMessageForForward(gcs_msg)
-			
-					# Finally, in order to forward this, we actually need to
-					# hack PyMAVLink so the message has the right source
-					# information attached.
-					self.vehicle.mav.srcSystem = gcs_msg.get_srcSystem()
-					self.vehicle.mav.srcComponent = gcs_msg.get_srcComponent()
-			
-					# Only now is it safe to send the message
-					self.vehicle.mav.send(gcs_msg)
+			if self.vehicle != None:
+				vcl_msg = self.vehicle.recv_match(blocking=False)
+				gcs_msg_p = ''
+				gcs_msg_s = ''
+				if self.gcs_conn_p != None:
+					gcs_msg_p = self.gcs_conn_p.recv_match(blocking=False)
+					handleMsg(vcl_msg, self.gcs_conn_p)
+					handleMsg(gcs_msg_p, self.vehicle)
+				if self.gcs_conn_s != None:
+					gcs_msg_s = self.gcs_conn_s.recv_match(blocking=False)
+					handleMsg(vcl_msg, self.gcs_conn_s)
+					handleMsg(gcs_msg_s, self.vehicle)
 					
-			vcl_msg = self.vehicle.recv_match(blocking=False)
-			if vcl_msg is None:
-					pass
-			elif vcl_msg.get_type() != 'BAD_DATA':
-					# We now have a message we want to forward. Now we need to
-					# make it safe to send
-					if vcl_msg.get_type() == 'HEARTBEAT':
-							print(vcl_msg)
-					vcl_msg = fixMAVLinkMessageForForward(vcl_msg)
-			
-					# Finally, in order to forward this, we actually need to
-					# hack PyMAVLink so the message has the right source
-					# information attached.
-					self.gcs_conn.mav.srcSystem = vcl_msg.get_srcSystem()
-					self.gcs_conn.mav.srcComponent = vcl_msg.get_srcComponent()
-			
-					self.gcs_conn.mav.send(vcl_msg)
-					
-			
 			# Don't abuse the CPU by running the loop at maximum speed
 			time.sleep(0.001)
+	def handleMsg(msg, target):
+		if msg is None:
+			pass
+		elif msg.get_type() != 'BAD_DATA':
+			if msg.get_type() == 'HEARTBEAT':
+				print(msg)
+			# We now have a message we want to forward. Now we need to
+			# make it safe to send
+			msg = fixMAVLinkMessageForForward(msg)
+			# Finally, in order to forward this, we actually need to
+			# hack PyMAVLink so the message has the right source
+			# information attached.
+			target.mav.srcSystem = msg.get_srcSystem()
+			target.mav.srcComponent = msg.get_srcComponent()
+	
+			# Only now is it safe to send the message
+			target.mav.send(msg)
 mavrouter = MavRouter()
 mavrouter.connectOutput('udp:192.168.0.99:14450')
 mavrouter.connectInput("/dev/ttyACM0")
