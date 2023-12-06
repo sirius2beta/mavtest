@@ -42,7 +42,7 @@ class MavRouter:
 			if (self.gcs_conn == None) or (self.vehicle == None):
 					# Don't abuse the CPU by running the loop at maximum speed
 					time.sleep(0.001)
-					return
+					continue
 			gcs_msg = self.gcs_conn.recv_match(blocking=False)
 			if gcs_msg is None:
 					pass
