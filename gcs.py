@@ -18,10 +18,10 @@ def fixMAVLinkMessageForForward(msg):
 
 class MavRouter:
 	def __init__(self):
-	        self.thread_terminate = False
-	        self.gcs_conn = None
-	        self.vehicle = None
-	        self.loop = threading.Thread(target=self.loopFunction)
+		self.thread_terminate = False
+		self.gcs_conn = None
+		self.vehicle = None
+		self.loop = threading.Thread(target=self.loopFunction)
 			self.loop.start()
 
 	def __del__(self):
