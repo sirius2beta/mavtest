@@ -34,15 +34,15 @@ class MavRouter:
 		vehicle = mavutil.mavlink_connection(dev, baud=57600)
 	def loopFunction(self):
 		while True:
-		    if self.thread_terminate is True:
+			if self.thread_terminate is True:
 					break
 		    # Don't block for a GCS message - we have messages
 		    # from the vehicle to get too
-		    if (gcs_conn == None) or (vehicle == None):
+			if (gcs_conn == None) or (vehicle == None):
 			# Don't abuse the CPU by running the loop at maximum speed
 			time.sleep(0.001)
 			return
-		    gcs_msg = gcs_conn.recv_match(blocking=False)
+				gcs_msg = gcs_conn.recv_match(blocking=False)
 		    if gcs_msg is None:
 			pass
 		    elif gcs_msg.get_type() != 'BAD_DATA':
