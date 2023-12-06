@@ -22,7 +22,7 @@ def fixMAVLinkMessageForForward(msg):
 gcs_conn = mavutil.mavlink_connection('udp:192.168.0.99:14450', input=False)
 
 
-vehicle = mavutil.mavlink_connection("/dev/ttyAMA0", baud=57600)
+vehicle = mavutil.mavlink_connection("/dev/ttyACM0", baud=57600)
 vehicle.wait_heartbeat()
 print(f'Heartbeat from system (system {vehicle.target_system} component {vehicle.target_system})')
 
