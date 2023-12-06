@@ -17,7 +17,7 @@ def fixMAVLinkMessageForForward(msg):
     return msg
 
 class MavRouter:
-	def __init__(self):
+
         self.thread_terminate = False
         self.gcs_conn = None
         self.vehicle = None
