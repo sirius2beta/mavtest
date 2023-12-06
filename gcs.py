@@ -62,7 +62,7 @@ class MavRouter:
 					# Only now is it safe to send the message
 					self.vehicle.mav.send(gcs_msg)
 					
-			vcl_msg = vehicle.recv_match(blocking=False)
+			vcl_msg = self.vehicle.recv_match(blocking=False)
 			if vcl_msg is None:
 					pass
 			elif vcl_msg.get_type() != 'BAD_DATA':
