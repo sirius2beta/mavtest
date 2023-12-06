@@ -28,21 +28,21 @@ class MavRouter:
 		self.thread_terminate = True
 		self.loop.join()
 	def connectOutput(self, ip):
-		gcs_conn = mavutil.mavlink_connection(ip, input=False)
+		self.gcs_conn = mavutil.mavlink_connection(ip, input=False)
 
 	def connectInput(self, dev):
-		vehicle = mavutil.mavlink_connection(dev, baud=57600)
+		self.vehicle = mavutil.mavlink_connection(dev, baud=57600)
 	def loopFunction(self):
 		while True:
 			if self.thread_terminate is True:
 				break
             # Don't block for a GCS message - we have messages
             # from the vehicle to get too
-			if (gcs_conn == None) or (vehicle == None):
+			if (self.gcs_conn == None) or (self.vehicle == None):
 					# Don't abuse the CPU by running the loop at maximum speed
 					time.sleep(0.001)
 					return
-			gcs_msg = gcs_conn.recv_match(blocking=False)
+			gcs_msg = self.gcs_conn.recv_match(blocking=False)
 			if gcs_msg is None:
 					pass
 			elif gcs_msg.get_type() != 'BAD_DATA':
@@ -55,11 +55,11 @@ class MavRouter:
 					# Finally, in order to forward this, we actually need to
 					# hack PyMAVLink so the message has the right source
 					# information attached.
-					vehicle.mav.srcSystem = gcs_msg.get_srcSystem()
-					vehicle.mav.srcComponent = gcs_msg.get_srcComponent()
+					self.vehicle.mav.srcSystem = gcs_msg.get_srcSystem()
+					self.vehicle.mav.srcComponent = gcs_msg.get_srcComponent()
 			
 					# Only now is it safe to send the message
-					vehicle.mav.send(gcs_msg)
+					self.vehicle.mav.send(gcs_msg)
 					
 			vcl_msg = vehicle.recv_match(blocking=False)
 			if vcl_msg is None:
@@ -74,10 +74,10 @@ class MavRouter:
 					# Finally, in order to forward this, we actually need to
 					# hack PyMAVLink so the message has the right source
 					# information attached.
-					gcs_conn.mav.srcSystem = vcl_msg.get_srcSystem()
-					gcs_conn.mav.srcComponent = vcl_msg.get_srcComponent()
+					self.gcs_conn.mav.srcSystem = vcl_msg.get_srcSystem()
+					self.gcs_conn.mav.srcComponent = vcl_msg.get_srcComponent()
 			
-					gcs_conn.mav.send(vcl_msg)
+					self.gcs_conn.mav.send(vcl_msg)
 					
 			
 			# Don't abuse the CPU by running the loop at maximum speed
