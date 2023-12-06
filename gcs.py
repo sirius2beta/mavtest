@@ -8,20 +8,20 @@ import time
 # you try to send the message again.
 def fixMAVLinkMessageForForward(msg):
 		msg_type = msg.get_type()
-    if msg_type in ('PARAM_VALUE', 'PARAM_REQUEST_READ', 'PARAM_SET'):
-        if type(msg.param_id) == str:
-            msg.param_id = msg.param_id.encode()
-    elif msg_type == 'STATUSTEXT':
-        if type(msg.text) == str:
-            msg.text = msg.text.encode()
-    return msg
+	if msg_type in ('PARAM_VALUE', 'PARAM_REQUEST_READ', 'PARAM_SET'):
+		if type(msg.param_id) == str:
+			msg.param_id = msg.param_id.encode()
+	elif msg_type == 'STATUSTEXT':
+		if type(msg.text) == str:
+			msg.text = msg.text.encode()
+	return msg
 
 class MavRouter:
 	def __init__(self):
-				self.thread_terminate = False
-				self.gcs_conn = None
-				self.vehicle = None
-				self.loop = threading.Thread(target=self.loopFunction)
+		self.thread_terminate = False
+		self.gcs_conn = None
+		self.vehicle = None
+		self.loop = threading.Thread(target=self.loopFunction)
 		self.loop.start()
 
 	def __del__(self):
