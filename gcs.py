@@ -7,7 +7,7 @@ import time
 # This converts those messages so your code doesn't crash when
 # you try to send the message again.
 def fixMAVLinkMessageForForward(msg):
-		msg_type = msg.get_type()
+	msg_type = msg.get_type()
 	if msg_type in ('PARAM_VALUE', 'PARAM_REQUEST_READ', 'PARAM_SET'):
 		if type(msg.param_id) == str:
 			msg.param_id = msg.param_id.encode()
