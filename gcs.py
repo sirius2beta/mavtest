@@ -82,7 +82,7 @@ class MavlinkManager:
 			# Only now is it safe to send the message
 			target.mav.send(msg)
 mavrouter = MavRouter()
-mavrouter.connectOutput('udp:192.168.0.99:14450')
+mavrouter.connectGCS('udp:192.168.0.99:14450',True)
 mavrouter.connectInput("/dev/ttyACM0")
 
 
