@@ -33,7 +33,7 @@ class MavlinkManager:
 		if isPrimary:
 			if self.gcs_conn_p != None:
 				self.gcs_conn_p.close()
-				self.gcs_conn_p = mavutil.mavlink_connection(ip, input=False)
+			self.gcs_conn_p = mavutil.mavlink_connection(ip, input=False)
 		else:
 			if self.gcs_conn_s != None:
 				self.gcs_conn_s.close()
