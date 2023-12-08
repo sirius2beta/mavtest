@@ -56,16 +56,16 @@ class MavManager:
 				gcs_msg_s = ''
 				if self.gcs_conn_p != None:
 					gcs_msg_p = self.gcs_conn_p.recv_match(blocking=False)
-					handleMsg(vcl_msg, self.gcs_conn_p)
-					handleMsg(gcs_msg_p, self.vehicle)
+					self.handleMsg(vcl_msg, self.gcs_conn_p)
+					self.handleMsg(gcs_msg_p, self.vehicle)
 				if self.gcs_conn_s != None:
 					gcs_msg_s = self.gcs_conn_s.recv_match(blocking=False)
-					handleMsg(vcl_msg, self.gcs_conn_s)
-					handleMsg(gcs_msg_s, self.vehicle)
+					self.handleMsg(vcl_msg, self.gcs_conn_s)
+					self.handleMsg(gcs_msg_s, self.vehicle)
 					
 			# Don't abuse the CPU by running the loop at maximum speed
 			time.sleep(0.001)
-	def handleMsg(msg, target):
+	def handleMsg(self, msg, target):
 		if msg is None:
 			pass
 		elif msg.get_type() != 'BAD_DATA':
