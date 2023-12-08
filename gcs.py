@@ -40,6 +40,8 @@ class MavlinkManager:
 			self.gcs_conn_s = mavutil.mavlink_connection(ip, input=False)
 
 	def connectVehicle(self, dev):
+		if self.vehicle != None:
+				self.vehicle.close()
 		self.vehicle = mavutil.mavlink_connection(dev, baud=57600)
 	def loopFunction(self):
 		while True:
