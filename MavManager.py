@@ -18,7 +18,8 @@ def fixMAVLinkMessageForForward(msg):
 	return msg
 
 class MavManager:
-	def __init__(self):
+	def __init__(self, toolBox):
+		self.toolBox = toolBox
 		self.thread_terminate = False
 		self.gcs_conn_p = None
 		self.gcs_conn_s = None
